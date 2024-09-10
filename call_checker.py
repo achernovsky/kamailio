@@ -4,7 +4,7 @@ import logging
 app = Flask(__name__)
 
 # Define the IPs you want to block
-BLOCKED_SOURCE_IP = "212.123.203.70"
+BLOCKED_SOURCE_IP = "84.25.58.187"
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s', handlers=[logging.FileHandler("call_logs.log"), logging.StreamHandler()])
