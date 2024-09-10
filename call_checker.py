@@ -15,6 +15,9 @@ def check_call():
     data = request.form
     source_ip = data.get('source_ip')
     destination_ip = data.get('destination_ip')
+    user_alias = request.form.get('user_alias')  # Get the custom X-UserAlias
+
+    print(f"User Alias: {user_alias}")
 
     # Check if the source IP matches the blocked IP
     if source_ip == BLOCKED_SOURCE_IP:
