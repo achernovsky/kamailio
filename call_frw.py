@@ -3,8 +3,10 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-FORWARDED_NUMBER = "bob"
-FORWARD_To = "test11"
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+FORWARD_TO = "test11"
 
 @app.route('/forward-call', methods=['POST'])
 def forward_call():
@@ -16,9 +18,9 @@ def forward_call():
     logging.info(f"Caller number: {caller_number}, Called number: {called_number}")
 
     # Logic to determine if call forwarding is needed
-    if called_number == FORWARDED_NUMBER:
-        logging.info(f"Call forwarding triggered for {called_number}. Forwarding to {FORWARD_To}.")
-        return jsonify({"forward_to": FORWARD_To})
+    if called_number == "bob":
+        logging.info(f"Call forwarding triggered for {called_number}. Forwarding to {FORWARD_TO}.")
+        return jsonify({"forward_to": FORWARD_TO})
     else:
         logging.info(f"No call forwarding required for {called_number}.")
         return jsonify({"forward_to": None})
