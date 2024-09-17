@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
 from web3 import Web3
+from eth_account import Account
+from eth_account.messages import encode_defunct
 
 app = Flask(__name__)
 
@@ -40,15 +42,32 @@ def verify_nft_ownership(wallet_address, nft_number):
         print(f"Error verifying NFT ownership: {str(e)}")
         return False
 
+def verify_signature(wallet_address, nft_number, signature):
+    message = f"{wallet_address}{nft_number}"
+    message_hash = encode_defunct(text=message)
+    
+    try:
+        recovered_address = Account.recover_message(message_hash, signature=signature)
+        return recovered_address.lower() == wallet_address.lower()
+    except Exception as e:
+        print(f"Error verifying signature: {str(e)}")
+        return False
+
 @app.route('/auth', methods=['POST'])
 def authenticate():
     data = request.json
     wallet_address = data.get('wallet_address')
     nft_number = data.get('nft_number')
+    signature = data.get('signature')
 
-    if not wallet_address or not nft_number:
-        return jsonify({"auth": "failed", "reason": "Missing wallet address or NFT number"}), 400
+    if not all([wallet_address, nft_number, signature]):
+        return jsonify({"auth": "failed", "reason": "Missing wallet address, NFT number, or signature"}), 400
 
+    # Verify signature
+    if not verify_signature("0xE83cDeCfD1B75819787Bf1fAF7272D7ba057a0e1", nft_number, signature):
+        return jsonify({"auth": "failed", "reason": "Invalid signature"}), 401
+
+    # Verify NFT ownership
     if verify_nft_ownership(wallet_address, nft_number):
         return jsonify({"auth": "success"}), 200
     else:
